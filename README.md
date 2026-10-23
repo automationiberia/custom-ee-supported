@@ -44,13 +44,16 @@ Este EE está preparado para entornos híbridos y multicloud, integrando de seri
 ## 🚀 Paso 1: Requisitos Previos
 
 1. Añadir repositorio de AAP 2.6:
-   subscription-manager repos --enable=ansible-automation-platform-2.6-for-rhel-9-x86_64-rpms
+   
+    subscription-manager repos --enable=ansible-automation-platform-2.6-for-rhel-9-x86_64-rpms
 
 2. Instalar podman, ansible-builder (v3) y ansible-navigator:
-   dnf install podman ansible-builder ansible-navigator -y
+    
+    dnf install podman ansible-builder ansible-navigator -y
 
 3. Autenticación en el registro oficial de Red Hat:
-   podman login registry.redhat.io
+
+    podman login registry.redhat.io
 
 4. Disponer de un Token de Red Hat Automation Hub (para descargar colecciones certificadas).
 
@@ -61,19 +64,21 @@ Este EE está preparado para entornos híbridos y multicloud, integrando de seri
 Por motivos de seguridad, el archivo de configuración con credenciales no está versionado en Git.
 
 1. Copiar la plantilla de ejemplo:
-   cp ansible.cfg.example ansible.cfg
+
+    cp ansible.cfg.example ansible.cfg
 
 2. Editar ansible.cfg e introducir el token de Automation Hub:
-   [galaxy]
-   server_list = automation_hub, release_galaxy
+   
+    [galaxy]
+    server_list = automation_hub, release_galaxy
 
-   [galaxy_server.automation_hub]
-   url=https://console.redhat.com/api/automation-hub/content/published/
-   auth_url=https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
-   token=TU_OFFLINE_TOKEN_AQUI
+    [galaxy_server.automation_hub]
+    url=https://console.redhat.com/api/automation-hub/content/published/
+    auth_url=https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+    token=TU_OFFLINE_TOKEN_AQUI
 
-   [galaxy_server.release_galaxy]
-   url=https://galaxy.ansible.com/
+    [galaxy_server.release_galaxy]
+    url=https://galaxy.ansible.com/
 
 Nota de aislamiento: La directiva additional_build_files inyecta ansible.cfg únicamente durante la etapa galaxy. El archivo nunca se transfiere a la imagen final.
 
@@ -83,7 +88,7 @@ Nota de aislamiento: La directiva additional_build_files inyecta ansible.cfg ún
 
 Construir la imagen del EE localmente ejecutando en la raíz del repositorio:
 
-ansible-builder build -t localhost/custom-ee-supported:2.6.0 --container-runtime podman -v 3
+    ansible-builder build -t localhost/custom-ee-supported:2.6.0 --container-runtime podman -v 3
 
 ---
 
@@ -92,13 +97,15 @@ ansible-builder build -t localhost/custom-ee-supported:2.6.0 --container-runtime
 Antes de distribuir la imagen, validar que todas las dependencias y colecciones operen limpiamente:
 
 1. Verificación interactiva de SDKs y librerías:
-   podman run --rm -it localhost/custom-ee-supported:2.6.0 python3 -c '
-   import winrm, boto3, pyVmomi, netapp_lib, azure.identity, cryptography
-   print("VALIDACION EXITOSA - TODAS LAS LIBRERIAS CARGAN DE FORMA NATIVA")
-   '
+   
+    podman run --rm -it localhost/custom-ee-supported:2.6.0 python3 -c '
+    import winrm, boto3, pyVmomi, netapp_lib, azure.identity, cryptography
+    print("VALIDACION EXITOSA - TODAS LAS LIBRERIAS CARGAN DE FORMA NATIVA")
+    '
 
 2. Ejecución del Playbook de Auditoría con ansible-navigator:
-   ansible-navigator run test-ee.yml -m stdout --eei localhost/custom-ee-supported:2.6.0
+   
+    ansible-navigator run test-ee.yml -m stdout --eei localhost/custom-ee-supported:2.6.0
 
 ---
 
@@ -107,13 +114,16 @@ Antes de distribuir la imagen, validar que todas las dependencias y colecciones 
 Subir la imagen validada a Private Automation Hub (PAH), Red Hat Quay o registro corporativo:
 
 1. Iniciar sesión en el registro destino:
-   podman login <hub-o-registro.tu-empresa.com>
+   
+    podman login <hub-o-registro.tu-empresa.com>
 
 2. Etiquetar la imagen para el registro:
-   podman tag localhost/custom-ee-supported:2.6.0 <hub-o-registro.tu-empresa.com>/ansible/custom-ee-supported:2.6.0
+   
+    podman tag localhost/custom-ee-supported:2.6.0 <hub-o-registro.tu-empresa.com>/ansible/custom-ee-supported:2.6.0
 
 3. Empujar la imagen:
-   podman push <hub-o-registro.tu-empresa.com>/ansible/custom-ee-supported:2.6.0
+   
+    podman push <hub-o-registro.tu-empresa.com>/ansible/custom-ee-supported:2.6.0
 
 ---
 
