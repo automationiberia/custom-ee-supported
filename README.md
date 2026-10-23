@@ -44,11 +44,11 @@ Este EE está preparado para entornos híbridos y multicloud, integrando de seri
 ## 🚀 Paso 1: Requisitos Previos
 
 1. Añadir repositorio de AAP 2.6:
-   
+ 
     subscription-manager repos --enable=ansible-automation-platform-2.6-for-rhel-9-x86_64-rpms
 
 2. Instalar podman, ansible-builder (v3) y ansible-navigator:
-    
+
     dnf install podman ansible-builder ansible-navigator -y
 
 3. Autenticación en el registro oficial de Red Hat:
