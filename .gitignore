@@ -1,0 +1,8 @@
+context/
+_build/
+*.pyc
+__pycache__/
+ansible.cfg
+.cache/
+test-ee-artifact*
+ansible-navigator.log
